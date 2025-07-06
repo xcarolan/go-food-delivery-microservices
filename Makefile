@@ -1,4 +1,4 @@
-.PHONY: install-tools
+nin.PHONY: install-tools
 install-tools:
 	@./scripts/install-tools.sh
 

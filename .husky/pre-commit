@@ -3,3 +3,5 @@
 
 make format && git add -A .
 #make lint && git add -A .
+make format && git add -A .
+make lint && git add -A .
