@@ -3,9 +3,10 @@ package json
 import (
 	"log"
 
+	"github.com/mehdihadeli/go-food-delivery-microservices/internal/pkg/core/serializer"
+
 	"github.com/TylerBrock/colorjson"
 	"github.com/goccy/go-json"
-	"github.com/mehdihadeli/go-food-delivery-microservices/internal/pkg/core/serializer"
 	"github.com/mitchellh/mapstructure"
 )
 

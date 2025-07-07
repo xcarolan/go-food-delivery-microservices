@@ -34,7 +34,8 @@ go install honnef.co/go/tools/cmd/staticcheck@latest
 
 # https://dev.to/techschoolguru/how-to-define-a-protobuf-message-and-generate-go-code-4g4e
 # https://stackoverflow.com/questions/13616033/install-protocol-buffers-on-windows
-go install github.com/golang/protobuf/protoc-gen-go@latest
+# New (correct)
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 # migration tools
@@ -48,7 +49,7 @@ go install github.com/swaggo/swag/cmd/swag@latest
 # go install github.com/swaggo/swag/cmd/swag@v1.8.3
 
 # https://github.com/deepmap/oapi-codegen
-go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
+go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 
 # https://github.com/OpenAPITools/openapi-generator-cli
 npm install -g @openapitools/openapi-generator-cli

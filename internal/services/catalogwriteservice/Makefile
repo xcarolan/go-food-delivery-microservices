@@ -2,11 +2,11 @@ GOPATH:=$(shell go env GOPATH)
 
 .PHONY: run
 run:
-	go run ./cmd/main.go
+	go run ./cmd/app/main.go
 
 .PHONY: build
 build:
-	go build ./cmd/main.go
+	go build ./cmd/app/main.go
 
 .PHONY: test
 test:
@@ -77,7 +77,7 @@ SSL_MODE = disable
 
 .PHONY: postgres
 postgres:
-    docker run --name postgres -p $(DB_PORT)\:$(DB_PORT) -e POSTGRES_USER=$(DB_USER) -e POSTGRES_PASSWORD=$(DB_PASS) -d postgres:11.1-alpine
+	docker run --name postgres -p $(DB_PORT):$(DB_PORT) -e POSTGRES_USER=$(DB_USER) -e POSTGRES_PASSWORD=$(DB_PASS) -d postgres:11.1-alpine
 
 .PHONY: create_db
 create_db:

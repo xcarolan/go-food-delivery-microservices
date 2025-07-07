@@ -3,14 +3,14 @@
 # https://github.com/grafana/tempo/blob/main/example/docker-compose/local/docker-compose.yaml
 # https://github.com/build-on-aws/instrumenting-java-apps-using-opentelemetry/blob/main/docker-compose.yaml
 
-#version: "3.8"
-name: go-food-delivery-microservices
+version: "3.8"
+#name: x-go-food-delivery-microservices
 
 services:
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
-    pull_policy: if_not_present
+    #pull_policy: if_not_present
     restart: unless-stopped
     ports:
       - ${RABBITMQ_HOST_PORT:-5672}:${RABBITMQ_PORT:-5672}
@@ -26,7 +26,7 @@ services:
   # https://prometheus.io/docs/guides/go-application/
   prometheus:
     image: prom/prometheus:latest
-    pull_policy: if_not_present
+    #pull_policy: if_not_present
     container_name: prometheus
     restart: unless-stopped
     user: root
@@ -41,7 +41,7 @@ services:
     healthcheck:
       interval: 5s
       retries: 10
-      test: wget --no-verbose --tries=1 --spider http://localhost:9090/status || exit 1
+      test: wget --no-verbose --tries=1 --spider -O - http://localhost:9090/status || exit 1
     networks:
       - food-delivery
 
@@ -49,7 +49,7 @@ services:
 #   # https://prometheus.io/docs/guides/node-exporter/
 #   node_exporter:
 #     container_name: node_exporter
-#     pull_policy: if_not_present
+#     #pull_policy: if_not_present
 #     restart: unless-stopped
 #     image: prom/node-exporter
 #     ports:
@@ -59,7 +59,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    pull_policy: if_not_present
+    pull_policy: always
     container_name: grafana
     restart: unless-stopped
     volumes:
@@ -72,12 +72,12 @@ services:
     healthcheck:
       interval: 5s
       retries: 10
-      test: wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
+      test: wget --no-verbose --tries=1 --spider  http://localhost:3000/api/health || exit 1
     depends_on:
       prometheus:
         condition: service_healthy
-      tempo:
-        condition: service_healthy
+      #tempo:
+       # condition: service_healthy
     networks:
       - food-delivery
 
@@ -96,10 +96,6 @@ services:
       - "4322:4317"   # otlp grpc
       - "9411"        # zipkin - export zipkin traces to tempo
       - "14268"       # jaeger - export jaeger traces to tempo
-    healthcheck:
-      interval: 5s
-      retries: 10
-      test: wget --no-verbose --tries=1 --spider http://localhost:3200/status || exit 1
     networks:
       - food-delivery
 
@@ -113,7 +109,7 @@ services:
 
   postgres:
     image: postgres:latest
-    pull_policy: if_not_present
+    #pull_policy: if_not_present
     container_name: postgres
     restart: unless-stopped
     ports:
@@ -129,7 +125,7 @@ services:
   # redis-stack is a image with redis modules enabled like JSON module
   redis:
     image: redis/redis-stack:latest
-    pull_policy: if_not_present
+    #pull_policy: if_not_present
     restart: unless-stopped
     container_name: redis
     ports:
@@ -139,7 +135,7 @@ services:
 
   mongo:
     image: mongo:latest
-    pull_policy: if_not_present
+    #pull_policy: if_not_present
     container_name: mongo
     restart: unless-stopped
     # https://docs.docker.com/compose/environment-variables/env-file/#parameter-expansion
@@ -160,7 +156,7 @@ services:
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: jaeger
-    pull_policy: if_not_present
+    #pull_policy: if_not_present
     restart: unless-stopped
     command:
       - "--memory.max-traces"
@@ -184,16 +180,21 @@ services:
       - "4320:4317" # OTLP gRPC default port - for prevent duplicate expose this port that will expose also by `otel-collector` we not expose it on `4317` - `4320` could use by the app through otlptracegrpc
       - "4321:4318" # OTLP Http default port - for prevent duplicate expose this port that will expose also by `otel-collector` we not expose it on `4318` - `4321` could use by the app through otlptracehttp
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:16686" ]
-      interval: 10s
+      test: [ "CMD-SHELL", "nc -z localhost 16686 || exit 1" ] # Check if port 16686 is open
+      # If 'nc' (netcat) is not present, you can try this alternative:
+      # test: [ "CMD-SHELL", "printf '' > /dev/tcp/localhost/16686 || exit 1" ]
+      # Or, a very basic check if the process is running and listening on the port:
+      # test: ["CMD-SHELL", "grep -q 16686 /proc/net/tcp || exit 1"] # Linux specific
+      interval: 15s
       retries: 3
       timeout: 10s
+      start_period: 15s
     networks:
       - food-delivery
 
 #   zipkin:
 #     image: openzipkin/zipkin:latest
-#     pull_policy: if_not_present
+#     #pull_policy: if_not_present
 #     restart: unless-stopped
 #     container_name: zipkin
 #     ports:
@@ -207,7 +208,7 @@ services:
   # EVENTSTORE_MEM_DB=true, it tells the EventStoreDB container to use an in-memory database, which means that any data stored in EventStoreDB will not be persisted between container restarts. Once the container is stopped or restarted, all data will be lost.
   eventstore:
     image: eventstore/eventstore:latest
-    pull_policy: if_not_present
+    #pull_policy: if_not_present
     container_name: eventstore
     restart: unless-stopped
     environment:
